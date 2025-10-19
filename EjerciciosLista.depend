@@ -1,0 +1,12 @@
+# depslib dependency file v1.0
+1759102549 source:c:\users\artin\desktop\ejerciciosprogramacion\ejercicioslista\main.c
+	"EjerciciosLista.h"
+
+1759102495 c:\users\artin\desktop\ejerciciosprogramacion\ejercicioslista\ejercicioslista.h
+	<stdio.h>
+	<stdlib.h>
+	"string.h"
+
+1759102495 source:c:\users\artin\desktop\ejerciciosprogramacion\ejercicioslista\ejercicioslista.c
+	"EjerciciosLista.h"
+
