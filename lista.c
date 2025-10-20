@@ -59,6 +59,33 @@ int poner_ult_lista(tLista* pl, const void* pd, size_t tam)
     return VERDADERO;
 }
 
+int lista_buscar(tLista* pl, void* info, int(*Cmp)(const void*, const void*)){
+    while(*pl && Cmp((*pl)->info, info) != 0){
+        pl = &(*pl)->sig;
+    }
+    if(!*pl){
+        return 0;
+    }
+    return 1;
+}
+
+int poner_pri_lista(tLista* pl, const void* pd, size_t tam)
+{
+    tNodo* nue=(tNodo*)malloc(sizeof(tNodo)+tam);
+    if(!nue)
+        return FALSO;   // sin memoria
+    nue->info=nue+1;
+
+    memcpy(nue->info,pd,tam);
+    nue->tam=tam;
+
+    nue->sig=*pl;
+    *pl=nue;
+
+    return VERDADERO;
+}
+
+
 int sacar_pri_lista(tLista* pl, void* pd, size_t tam)
 {
     tNodo* elim=*pl;
