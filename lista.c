@@ -127,3 +127,16 @@ int sacar_elem_ord_lista(tLista* pl, void* pd, size_t tam, int (*cmp)(const void
     free(elim);
     return VERDADERO;
 }
+
+int ver_nodo(tLista* pl, void* pd, size_t tam, char* clave, int (*cmp)(const void*, const void*)){
+
+    while(*pl){
+        if(cmp((*pl)->info, clave) == 0){
+            memcpy(pd,(*pl)->info, tam);
+            return VERDADERO;
+        }
+        pl = &(*pl)->sig;
+    }
+
+    return FALSO;
+}

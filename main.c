@@ -1,5 +1,4 @@
 #include "diccionario.h"
-#define HASHSIZE 1000
 
 int main()
 {

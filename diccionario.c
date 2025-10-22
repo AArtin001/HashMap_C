@@ -5,15 +5,25 @@
 /* hash: forma un valor hash para la cadena s */
 unsigned hash(char *s){
     unsigned hashval;
-    for (hashval = 0; *s != '\0'; s+ +)
-        hashval = *s + 31 * hashval;
+    for (hashval = 0; *s != '\0'; s++)
+        hashval = (*s + 31 * hashval);
     return hashval % HASHSIZE;
  }
 
-int iniInfo(t_Info* info, char* clave, char* valor){
+ int cmp_clave_info(const void* nodoInfo, const void* claveBuscada) {
+    const t_info* info = (const t_info*)nodoInfo;
+    const char*   k    = (const char*)claveBuscada;
+    return strcmp(info->clave, k);
+}
+
+int accion(void *){
+    return 1;
+}
+
+int iniInfo(t_info* info, char* clave, char* valor){
     //Aca hay que validar que haya memoria para los malloc
 
-    info = malloc(sizeof(t_info)));
+    info = malloc(sizeof(t_info));
 
     info->tamclave = strlen(clave);
     info->clave = malloc(info->tamclave);
@@ -24,20 +34,20 @@ int iniInfo(t_Info* info, char* clave, char* valor){
     return 0;
 }
 
-int crear_dic(*tDiccionario dic, int tam){
+int crear_dic(t_diccionario* dic, int tam){
     //Recorro cada elemento e inicializo la lista para cada uno
-    pos = 0;
+    int pos = 0;
     while((dic+(sizeof(t_diccionario) * pos)) < dic +((sizeof(t_diccionario) * tam))){
-        crearLista((dic+(sizeof(t_diccionario) * pos))->pl);
+        crear_lista((dic+(sizeof(t_diccionario) * pos))->pl);
         pos++;
     }
 
     return 0;
 }
 
-int poner_dic(tDiccionario *dic, char *clave, char *valor){
+int poner_dic(t_diccionario *dic, char *clave, char *valor){
     //Obtengo posicion
-    pos = hash(clave);
+    int pos = hash(clave);
 
     //Guardo la info en una estructura
     t_info *info;
@@ -49,20 +59,20 @@ int poner_dic(tDiccionario *dic, char *clave, char *valor){
 
     //Inserto la estructura con los datos en la lista
     ///Falta que reemplaze el valor en caso de que la clave ya exista
-    insertarOrdenado((dic+(sizeof(t_diccionario)*pos))->lp, info, sizeof(t_info)) //El calculo para saber la posicion en el vector puede ser una macro. "sizeof(t_info)" tambien
+    poner_ord_lista((dic+(sizeof(t_diccionario)*pos))->pl, info, sizeof(t_info), cmp_clave_info); //El calculo para saber la posicion en el vector puede ser una macro. "sizeof(t_info)" tambien
 
     return 0;
 }
 
-int obtener_dic(tDiccionario* dic, char* clave, char* valor){
+int obtener_dic(t_diccionario* dic, char* clave, char* valor){
 
-    pos = hash(clave);
+    int pos = hash(clave);
 
     t_info *info;
     iniInfo(info, clave, valor);
 
     //Funcion que retorna la info del nodo en el parametro que le paso
-    vernodo((dic+(sizeof(t_diccionario)*pos))->lp, info, sizeof(t_info));
+    ver_nodo((dic+(sizeof(t_diccionario)*pos))->pl, info, sizeof(t_info), clave, cmp_clave_info);
 
     //Copio el valor en el parametro recibido para el retorno
     strcpy(valor, info->valor);
@@ -71,16 +81,18 @@ int obtener_dic(tDiccionario* dic, char* clave, char* valor){
 }
 
 
-int sacar_dic(tDiccionario* dic, char* clave){
-    pos = hash(clave);
+int sacar_dic(t_diccionario* dic, char* clave){
+    int pos = hash(clave);
 
     //Funcion que busca en la lista la clave y elimina el nodo
-    eliminarNodo((dic+(sizeof(t_diccionario)*pos))->lp, clave);
+    sacar_elem_ord_lista((dic+(sizeof(t_diccionario)*pos))->pl, clave, cmp_clave_info);
+
+    return 0;
 }
 
-int recorrer_dic(tDiccionario*, accion, comparacion){
+int recorrer_dic(t_diccionario* dic, int tam, int (*accion)(void*), int (*cmp)(const void*, const void*)){
     //Recorro cada elemento
-    pos = 0;
+    int pos = 0;
     while((dic+(sizeof(t_diccionario) * pos)) < dic +((sizeof(t_diccionario) * tam))){
 
         ///Aca va una funcion que recorra la lista y ejecute para cada elemento la accion que recibo como paramtro
@@ -91,13 +103,13 @@ int recorrer_dic(tDiccionario*, accion, comparacion){
     return 0;
 }
 
-int destruir_dic(tDiccionario*){
+int destruir_dic(t_diccionario* dic, int tam){
     //Recorro cada elemento e inicializo la lista para cada uno
-    pos = 0;
+    int pos = 0;
     while((dic+(sizeof(t_diccionario) * pos)) < dic +((sizeof(t_diccionario) * tam))){
 
         ///Elimino la lista -> implica eliminar datos y liberar memoria
-        eliminarLista((dic+(sizeof(t_diccionario) * pos))->pl);
+        sacar_elem_ord_lista((dic+(sizeof(t_diccionario) * pos))->pl, cmp_clave_info);
 
         pos++;
     }

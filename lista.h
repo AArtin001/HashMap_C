@@ -28,5 +28,6 @@ int sacar_pri_lista(tLista* pl, void* pd, size_t tam);
 int sacar_ult_lista(tLista* pl, void* pd, size_t tam);
 int poner_ord_lista(tLista* pl, const void* pd, size_t tam, int (*cmp)(const void*, const void*));
 int sacar_elem_ord_lista(tLista* pl, void* pd, size_t tam, int (*cmp)(const void*, const void*));
+int ver_nodo(tLista* pl, void* pd, size_t tam, char* clave, int (*cmp)(const void*, const void*));
 
 #endif // LISTA_H_INCLUDED
