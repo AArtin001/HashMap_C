@@ -5,7 +5,7 @@
 #define HASHSIZE 1000
 
 typedef size_t (*hash_func_t)(const char* clave);
-typedef int    (*cmp_func_t)(const char* a, const char* b); // strcmp
+typedef int (*cmp_func_t)(const void* a, const void* b); // strcmp
 
 typedef struct{
     size_t capacidad;
@@ -26,11 +26,11 @@ unsigned hash(char *s);
 
 int crear_dic(t_diccionario* d, int capacidad, hash_func_t hash_func, cmp_func_t Cmp); //Recibe un puntero a diccionario y el tamaño
 //
-//int poner_dic(tDiccionario*, char*, char*); //Recibo un puntero al diccionario, un puntero a la clave(que luego va a ser hasheada) y un puntero a la info
+int poner_dic(t_diccionario* d, const char* clave, const void* valor, size_t tam_valor); //Recibo un puntero al diccionario, un puntero a la clave(que luego va a ser hasheada) y un puntero a la info
 //
-//int obtener_dic(tDiccionario*, char*, char*); //Recibo un *p a diccionario, la clave(que tengo que hashear) y devuelvo el valor (Devolver retornando o en el parametro???) --> voy a devolver en el parametro y usar el return para manejo de errores
-//
-//int sacar_dic(tDiccionario*, char*); //Recibo un *p a diccionario y la clave
+int obtener_dic(t_diccionario* pd, const char* clave, void* dato, size_t tamDato);
+
+int sacar_dic(t_diccionario* pd, const char* clave);
 //
 //int recorrer_dic(tDiccionario*, accion, comparacion); //Recibo un *p a diccionario, la accion y una func comparacion(puede ser null y ejecutar para todos)
 //

@@ -79,20 +79,15 @@ int poner_dic(t_diccionario* d, const char* clave, const void* valor, size_t tam
         return 0;
     }
     strcpy(dato->clave, clave);
-
-    if (valor && tam_valor > 0) {
-        dato->valor = malloc(tam_valor);
-        if (!dato->valor){
-            free(dato->clave);
-            free(dato);
-            return 0;
-        }
-        memcpy(dato->valor, valor, tam_valor);
-        dato->tamValor = tam_valor;
-    } else {
-        dato->valor = NULL;
-        dato->tamValor = 0;
+    //Insertamos el dato
+    dato->valor = malloc(tam_valor);
+    if (!dato->valor){
+        free(dato->clave);
+        free(dato);
+        return 0;
     }
+    memcpy(dato->valor, valor, tam_valor);
+    dato->tamValor = tam_valor;
 
     if (!poner_pri_lista(bucket, dato, sizeof(t_info))) {
         free(dato->valor);
@@ -103,5 +98,46 @@ int poner_dic(t_diccionario* d, const char* clave, const void* valor, size_t tam
 
     free(dato);
     d->cantidad++;
+    return 1;
+}
+
+
+int obtener_dic(t_diccionario* pd, const char* clave, void* dato, size_t tamDato){
+
+    if(!pd || !clave) {return 0;}
+
+    t_info aux;
+
+    size_t index = pd->hash_cmp(clave) % pd->capacidad;
+    //Buscamos el puntero a la lista
+    tLista bucket = pd->pl[idx];
+
+    aux.clave = (char*)clave;
+    aux.tamValor = 0;
+    aux.valor = NULL;
+
+    if(!lista_buscar(&bucket,&aux, sizeof(t_info), pd->cmp)){
+        return 0;
+    }
+
+    memcpy(dato, aux->valor, MIN(aux->tamValor, tamDato));
+
+    return 1;
+}
+
+
+int sacar_dic(t_diccionario* pd, const char* clave)
+{
+    if (!pd || !clave) return 0;
+
+    size_t idx = pd->hash_cmp(clave) % pd->capacidad;
+    tLista* bucket = &pd->pl[idx];
+
+    t_info probe = { (char*)clave, NULL, 0 };
+
+    if (!sacar_elem_ord_lista(bucket, &probe, sizeof(t_info), cmp_tinfo_por_clave))
+        return 0;
+
+    pd->cantidad--;
     return 1;
 }
