@@ -16,9 +16,21 @@ unsigned hash(char *s){
     return strcmp(info->clave, k);
 }
 
+
+/**Funciones Accion**/
+
 int accion(void *){
     return 1;
 }
+
+int ReemplazarInfo(const tLista* pl, void* nInfo){
+    t_info *info = (t_info*)nInfo; //Casteo el parametro
+    memcpy((*pl)->info, info, (*pl)->tam);
+
+    return 1;
+}
+/**FIN Funcion Accion**/
+
 
 int iniInfo(t_info* info, char* clave, char* valor){
     //Aca hay que validar que haya memoria para los malloc
@@ -50,7 +62,7 @@ int poner_dic(t_diccionario *dic, char *clave, char *valor){
     int pos = hash(clave);
 
     //Guardo la info en una estructura
-    t_info *info;
+    t_info *info = NULL; //Lo inicializo como null para saltearme el warning
 
     iniInfo(info, clave, valor);
     strcpy(info->clave, clave);
@@ -59,7 +71,7 @@ int poner_dic(t_diccionario *dic, char *clave, char *valor){
 
     //Inserto la estructura con los datos en la lista
     ///Falta que reemplaze el valor en caso de que la clave ya exista
-    poner_ord_lista((dic+(sizeof(t_diccionario)*pos))->pl, info, sizeof(t_info), cmp_clave_info); //El calculo para saber la posicion en el vector puede ser una macro. "sizeof(t_info)" tambien
+    poner_ord_lista((dic+(sizeof(t_diccionario)*pos))->pl, info, sizeof(t_info), cmp_clave_info, ReemplazarInfo); //El calculo para saber la posicion en el vector puede ser una macro. "sizeof(t_info)" tambien
 
     return 0;
 }
@@ -68,7 +80,7 @@ int obtener_dic(t_diccionario* dic, char* clave, char* valor){
 
     int pos = hash(clave);
 
-    t_info *info;
+    t_info *info = NULL; //Lo inicializo como null para saltearme el warning
     iniInfo(info, clave, valor);
 
     //Funcion que retorna la info del nodo en el parametro que le paso
@@ -85,7 +97,7 @@ int sacar_dic(t_diccionario* dic, char* clave){
     int pos = hash(clave);
 
     //Funcion que busca en la lista la clave y elimina el nodo
-    sacar_elem_ord_lista((dic+(sizeof(t_diccionario)*pos))->pl, clave, cmp_clave_info);
+    sacar_elem_ord_lista((dic+(sizeof(t_diccionario)*pos))->pl, clave, 1, cmp_clave_info); //En lugar de 1 debo pasar el tam de ¿clave?
 
     return 0;
 }
@@ -109,7 +121,7 @@ int destruir_dic(t_diccionario* dic, int tam){
     while((dic+(sizeof(t_diccionario) * pos)) < dic +((sizeof(t_diccionario) * tam))){
 
         ///Elimino la lista -> implica eliminar datos y liberar memoria
-        sacar_elem_ord_lista((dic+(sizeof(t_diccionario) * pos))->pl, cmp_clave_info);
+        //sacar_elem_ord_lista((dic+(sizeof(t_diccionario) * pos))->pl, , , cmp_clave_info);
 
         pos++;
     }

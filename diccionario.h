@@ -10,8 +10,8 @@ typedef struct{
 
 typedef struct{ //uso memoria dinamica para guardar la info -> almaceno el puntero a donde lo guardo y el tam de cada uno
     char *clave;
-    unsigned tamclave;
-    char *valor;
+    unsigned tamclave; //No es necesario -> puede calcularse buscando el \0 (Palabras de Jorge)
+    void *valor;
     unsigned tamvalor;
 }t_info;
 

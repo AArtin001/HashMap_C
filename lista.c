@@ -88,14 +88,17 @@ int sacar_ult_lista(tLista* pl, void* pd, size_t tam)
     return VERDADERO;
 }
 
-int poner_ord_lista(tLista* pl, const void* pd, size_t tam, int (*cmp)(const void*, const void*))
+int poner_ord_lista(tLista* pl, const void* pd, size_t tam, int (*cmp)(const void*, const void*), int (*accion)(const tLista*, void*))
 {
     tNodo* nue;
     int comp;
     while(  *pl && (comp=cmp(pd, (*pl)->info)>0) )
         pl=&(*pl)->sig;
-    if( *pl && comp==0  )
-        return FALSO;   // duplicado
+    if( *pl && comp==0)
+        //Aplico la accion
+
+        accion(pl, pd); //Accion que recibe el puntero al nodo a modificar y, opcionalmente, algo mas (en este caso la nueva info)
+        return ACTUALIZADO;   // duplicado
     nue=(tNodo*)malloc(sizeof(tNodo)+tam);
     if(!nue)
         return FALSO;   // sin memoria
