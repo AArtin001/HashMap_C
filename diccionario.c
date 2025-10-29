@@ -19,10 +19,6 @@ unsigned hash(char *s){
 
 /**Funciones Accion**/
 
-int accion(void *){
-    return 1;
-}
-
 int ReemplazarInfo(const tLista* pl, void* nInfo){
     t_info *info = (t_info*)nInfo; //Casteo el parametro
     memcpy((*pl)->info, info, (*pl)->tam);
@@ -45,7 +41,7 @@ void destruir_tinfo(t_info* pinfo)
         return;
     free(pinfo->clave);
     free(pinfo->valor);
-    free(pinfo);
+    //free(pinfo);
 }
 
 /**FIN Funcion Accion**/
@@ -120,13 +116,13 @@ int sacar_dic(t_diccionario* dic, char* clave){
     return 0;
 }
 
-int recorrer_dic(t_diccionario* dic, int tam, int (*accion)(void*), int (*cmp)(const void*, const void*)){
+int recorrer_dic(t_diccionario* dic, int tam, void (*accion)(void*)){
     //Recorro cada elemento
     int pos = 0;
     while((dic+(sizeof(t_diccionario) * pos)) < dic +((sizeof(t_diccionario) * tam))){
 
         ///Aca va una funcion que recorra la lista y ejecute para cada elemento la accion que recibo como paramtro
-
+        mapeo((dic+(sizeof(t_diccionario) * pos))->pl, accion);
         pos++;
     }
 
@@ -135,12 +131,16 @@ int recorrer_dic(t_diccionario* dic, int tam, int (*accion)(void*), int (*cmp)(c
 
 void destruir_lista(tLista* pl)
 {
+    tNodo* elim;
+    //Si no hay lista retorno
     if(!*pl)
         return;
-    mapeo(pl,(void*)destruir_tinfo);
-    tNodo* elim;
+    //Recorro lista, destruyendo info y el nodo
     while(*pl)
     {
+        destruir_tinfo((*pl)->info);
+        free((*pl)->info);
+
         elim=*pl;
         *pl=elim->sig;
         free(elim);
@@ -153,7 +153,7 @@ int destruir_dic(t_diccionario* dic, int tam){
     while((dic+(sizeof(t_diccionario) * pos)) < dic +((sizeof(t_diccionario) * tam))){
 
         ///Elimino la lista -> implica eliminar datos y liberar memoria
-        //sacar_elem_ord_lista((dic+(sizeof(t_diccionario) * pos))->pl, , , cmp_clave_info);
+        destruir_lista((dic+(sizeof(t_diccionario) * pos))->pl);
 
         pos++;
     }
