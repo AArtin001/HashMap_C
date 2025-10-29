@@ -1,7 +1,7 @@
 #include "diccionario.h"
 
 
-//Funcion Hash -> Se toma del libro "El Lenguaje de Programación C"
+//Funcion Hash -> Se toma del libro "El Lenguaje de ProgramaciÃ³n C"
 /* hash: forma un valor hash para la cadena s */
 unsigned hash(char *s){
     unsigned hashval;
@@ -29,8 +29,26 @@ int ReemplazarInfo(const tLista* pl, void* nInfo){
 
     return 1;
 }
-/**FIN Funcion Accion**/
 
+void mapeo(tLista* pl, void (*funcion)(void*))
+{
+    while(*pl)
+    {
+        funcion((*pl)->info);
+        pl=&(*pl)->sig;
+    }
+}
+
+void destruir_tinfo(t_info* pinfo)
+{
+    if(!pinfo)
+        return;
+    free(pinfo->clave);
+    free(pinfo->valor);
+    free(pinfo);
+}
+
+/**FIN Funcion Accion**/
 
 int iniInfo(t_info* info, char* clave, char* valor){
     //Aca hay que validar que haya memoria para los malloc
@@ -97,7 +115,7 @@ int sacar_dic(t_diccionario* dic, char* clave){
     int pos = hash(clave);
 
     //Funcion que busca en la lista la clave y elimina el nodo
-    sacar_elem_ord_lista((dic+(sizeof(t_diccionario)*pos))->pl, clave, 1, cmp_clave_info); //En lugar de 1 debo pasar el tam de ¿clave?
+    sacar_elem_ord_lista((dic+(sizeof(t_diccionario)*pos))->pl, clave, 1, cmp_clave_info); //En lugar de 1 debo pasar el tam de Â¿clave?
 
     return 0;
 }
@@ -113,6 +131,20 @@ int recorrer_dic(t_diccionario* dic, int tam, int (*accion)(void*), int (*cmp)(c
     }
 
     return 0;
+}
+
+void destruir_lista(tLista* pl)
+{
+    if(!*pl)
+        return;
+    mapeo(pl,(void*)destruir_tinfo);
+    tNodo* elim;
+    while(*pl)
+    {
+        elim=*pl;
+        *pl=elim->sig;
+        free(elim);
+    }
 }
 
 int destruir_dic(t_diccionario* dic, int tam){
