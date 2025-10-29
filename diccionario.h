@@ -16,9 +16,15 @@ typedef struct{ //uso memoria dinamica para guardar la info -> almaceno el punte
 }t_info;
 
 ///Funciones:
+
+
 unsigned hash(char *s);
 
-int crear_dic(t_diccionario*, int); //Recibe un puntero a diccionario y el tamaño
+void mapeo(tLista*, void (*funcion)(void*));
+
+void destruir_tinfo(tInfo*);
+
+int crear_dic(t_diccionario*, int); //Recibe un puntero a diccionario y el tamaÃ±o
 
 int poner_dic(t_diccionario*, char*, char*); //Recibo un puntero al diccionario, un puntero a la clave(que luego va a ser hasheada) y un puntero a la info
 
@@ -28,6 +34,9 @@ int sacar_dic(t_diccionario*, char*); //Recibo un *p a diccionario y la clave
 
 int recorrer_dic(t_diccionario*, int, int(*act)(void*), int (*cmp)(const void*, const void*)); //Recibo un *p a diccionario, la accion y una func comparacion(puede ser null y ejecutar para todos)
 
+void destruir_lista(tLista*);
+
 int destruir_dic(t_diccionario*, int); //Recibo un *p a diccionario
+
 
 #endif // DICCIONARIO_H_INCLUDED
