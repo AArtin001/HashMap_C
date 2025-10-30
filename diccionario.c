@@ -10,10 +10,18 @@ unsigned hash(char *s){
     return hashval % HASHSIZE;
  }
 
+ ///Recibe como parametros una t_info y un string
 int cmp_clave_info(const void* nodoInfo, const void* claveBuscada) {
     const t_info* info = (const t_info*)nodoInfo;
-    const char*   k    = (const char*)claveBuscada;
+    char*   k    = (char*)claveBuscada;
     return strcmp(info->clave, k);
+}
+
+///Recibe como parametros dos t_info
+int cmp_clave_info_2(const void* nodoInfo, const void* claveBuscada) {
+    const t_info* info = (const t_info*)nodoInfo;
+    const t_info* info2 = (const t_info*)claveBuscada;
+    return strcmp(info->clave, info2->clave);
 }
 
 
@@ -40,6 +48,7 @@ int ReemplazarInfo(const tLista* pl, void* nInfo) {
     return 1;
 }
 
+///Esta funcion es de lista
 void mapeo(tLista* pl, void (*funcion)(void*))
 {
     while(*pl)
@@ -107,14 +116,8 @@ int poner_dic(t_diccionario *dic, char *clave, void* valor, size_t tamValor){
     //Guardo la info en una estructura
     t_info *info = iniInfo(clave, valor, tamValor); //Lo inicializo como null para saltearme el warning
 
-
-//    strcpy(info->clave, clave);
-//    strcpy(info->valor, valor);
-
-
     //Inserto la estructura con los datos en la lista
-    ///Falta que reemplaze el valor en caso de que la clave ya exista
-    poner_ord_lista(&dic[pos].pl, info, sizeof(t_info), cmp_clave_info, ReemplazarInfo); //El calculo para saber la posicion en el vector puede ser una macro. "sizeof(t_info)" tambien
+    poner_ord_lista(&dic[pos].pl, info, sizeof(t_info), cmp_clave_info_2, ReemplazarInfo); ///El calculo para saber la posicion en el vector puede ser una macro. "sizeof(t_info)" tambien
 
     return 0;
 }
@@ -131,9 +134,7 @@ int obtener_dic(t_diccionario* dic, char* clave, void* valor, size_t tamValor){
 
     //Copio el valor en el parametro recibido para el retorno
     memcpy(valor, info->valor, tamValor);
-
     free(info);
-
     return 1;
 }
 
@@ -142,7 +143,9 @@ int sacar_dic(t_diccionario* dic, char* clave){
     int pos = hash(clave);
 
     //Funcion que busca en la lista la clave y elimina el nodo
-    sacar_elem_ord_lista(&dic[pos].pl, clave, 1, cmp_clave_info); //En lugar de 1 debo pasar el tam de ¿clave?
+    sacar_elem_ord_lista(&dic[pos].pl, clave, NULL, 0, cmp_clave_info); /**Paso como paramtros un NUll y un 0
+                                                                            NULL = Lugar donde se guarda la info que se esta eliminando
+                                                                            0 = Tam de NULL(Si es >0 da error de acceso a memoria )**/
 
     return 0;
 }
@@ -157,6 +160,7 @@ int recorrer_dic(t_diccionario* dic, int tam, void (*accion)(void*)){
     return 0;
 }
 
+///Esta funcion es de lista
 void destruir_lista(tLista* pl)
 {
     tNodo* elim;
@@ -177,13 +181,14 @@ void destruir_lista(tLista* pl)
 
 int destruir_dic(t_diccionario* dic, int tam){
     //Recorro cada elemento e inicializo la lista para cada uno
-    int pos = 0;
+    /*int pos = 0;
     while((dic+(sizeof(t_diccionario) * pos)) < dic +((sizeof(t_diccionario) * tam))){
-
         ///Elimino la lista -> implica eliminar datos y liberar memoria
-        destruir_lista((dic+(sizeof(t_diccionario) * pos))->pl);
-
+        destruir_lista((&dic[pos])->pl);
         pos++;
+    }*/
+    for(int i = 0; i < tam; i++){
+        destruir_lista(&dic[i].pl);
     }
 
     return 0;

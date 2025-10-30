@@ -96,7 +96,7 @@ int poner_ord_lista(tLista* pl, const void* pd, size_t tam, int (*cmp)(const voi
         pl=&(*pl)->sig;
     if( *pl && comp==0){
         //Aplico la accion
-        accion(pl, pd); //Accion que recibe el puntero al nodo a modificar y, opcionalmente, algo mas (en este caso la nueva info)
+        accion(pl, (void*)pd); //Accion que recibe el puntero al nodo a modificar y, opcionalmente, algo mas (en este caso la nueva info)
         return ACTUALIZADO;   // duplicado
     }
 
@@ -113,6 +113,8 @@ int poner_ord_lista(tLista* pl, const void* pd, size_t tam, int (*cmp)(const voi
     return VERDADERO;
 }
 
+///Esta funcion esta re mal
+/*
 int sacar_elem_ord_lista(tLista* pl, void* pd, size_t tam, int (*cmp)(const void*, const void*))
 {
     tNodo* elim;
@@ -122,10 +124,29 @@ int sacar_elem_ord_lista(tLista* pl, void* pd, size_t tam, int (*cmp)(const void
     while(*pl && (comp=cmp((*pl)->info,pd)>0))
         pl=&(*pl)->sig;
     if(!*pl || comp)
-        return FALSO;   // lista vacia o duplicado
+        return FALSO;   // No encontro el elemento
 
     elim=*pl;
     memcpy(pd,elim->info,MINIMO(tam,elim->tam));
+
+    *pl=elim->sig;
+    free(elim);
+    return VERDADERO;
+} */
+
+int sacar_elem_ord_lista(tLista* pl, void* clave, void* info , size_t tam, int (*cmp)(const void*, const void*))
+{
+    tNodo* elim;
+    int comp;
+    if(!*pl)
+        return FALSO;   // lista vacia
+    while(*pl && (comp=cmp((*pl)->info,clave)>0))
+        pl=&(*pl)->sig;
+    if(!*pl || comp)
+        return FALSO;   // No encontro el elemento
+
+    elim=*pl;
+    memcpy(info, elim->info,MINIMO(tam,elim->tam));
 
     *pl=elim->sig;
     free(elim);
