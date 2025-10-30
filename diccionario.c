@@ -10,7 +10,7 @@ unsigned hash(char *s){
     return hashval % HASHSIZE;
  }
 
- int cmp_clave_info(const void* nodoInfo, const void* claveBuscada) {
+int cmp_clave_info(const void* nodoInfo, const void* claveBuscada) {
     const t_info* info = (const t_info*)nodoInfo;
     const char*   k    = (const char*)claveBuscada;
     return strcmp(info->clave, k);
@@ -19,9 +19,23 @@ unsigned hash(char *s){
 
 /**Funciones Accion**/
 
-int ReemplazarInfo(const tLista* pl, void* nInfo){
-    t_info *info = (t_info*)nInfo; //Casteo el parametro
-    memcpy((*pl)->info, info, (*pl)->tam);
+int ReemplazarInfo(const tLista* pl, void* nInfo) {
+    if (!pl || !*pl || !nInfo)
+        return 0;
+
+    t_info* dst = (t_info*)(*pl)->info;   // info existente en la lista
+    t_info* src = (t_info*)nInfo;         // nueva info con valor actualizado
+
+    // liberar valor anterior
+    free(dst->valor);
+
+    // reservar y copiar el nuevo valor
+    dst->valor = malloc(src->tamvalor);
+    if (!dst->valor)
+        return 0;
+
+    memcpy(dst->valor, src->valor, src->tamvalor);
+    dst->tamvalor = src->tamvalor;
 
     return 1;
 }
@@ -46,64 +60,81 @@ void destruir_tinfo(t_info* pinfo)
 
 /**FIN Funcion Accion**/
 
-int iniInfo(t_info* info, char* clave, char* valor){
-    //Aca hay que validar que haya memoria para los malloc
+t_info* iniInfo(char* clave, void* valor, size_t tamValor){
 
-    info = malloc(sizeof(t_info));
+    t_info* info = malloc(sizeof(t_info));
+    if(!info){
+        return NULL;
+    }
 
-    info->tamclave = strlen(clave);
+    info->tamclave = (size_t)(strlen(clave) + 1);
     info->clave = malloc(info->tamclave);
+    if(!info->clave){
+        free(info);
+        return NULL;
+    }
 
-    info->tamvalor = strlen(valor);
-    info->valor = malloc(info->tamvalor);
+    memcpy(info->clave, clave, info->tamclave);
 
-    return 0;
+    info->tamvalor = tamValor;
+    info->valor = malloc(tamValor);
+    if(!info->valor){
+        free(info->clave);
+        free(info);
+        return NULL;
+    }
+
+    memcpy(info->valor, valor, tamValor);
+
+    return info;
 }
 
 int crear_dic(t_diccionario* dic, int tam){
     //Recorro cada elemento e inicializo la lista para cada uno
     int pos = 0;
-    while((dic+(sizeof(t_diccionario) * pos)) < dic +((sizeof(t_diccionario) * tam))){
-        crear_lista((dic+(sizeof(t_diccionario) * pos))->pl);
+    while((dic + pos) < (dic + tam)){
+        crear_lista(&dic[pos].pl);
         pos++;
     }
 
-    return 0;
+    return 1;
 }
 
-int poner_dic(t_diccionario *dic, char *clave, char *valor){
+int poner_dic(t_diccionario *dic, char *clave, void* valor, size_t tamValor){
     //Obtengo posicion
     int pos = hash(clave);
 
     //Guardo la info en una estructura
-    t_info *info = NULL; //Lo inicializo como null para saltearme el warning
+    t_info *info = iniInfo(clave, valor, tamValor); //Lo inicializo como null para saltearme el warning
 
-    iniInfo(info, clave, valor);
-    strcpy(info->clave, clave);
-    strcpy(info->valor, valor);
+
+//    strcpy(info->clave, clave);
+//    strcpy(info->valor, valor);
 
 
     //Inserto la estructura con los datos en la lista
     ///Falta que reemplaze el valor en caso de que la clave ya exista
-    poner_ord_lista((dic+(sizeof(t_diccionario)*pos))->pl, info, sizeof(t_info), cmp_clave_info, ReemplazarInfo); //El calculo para saber la posicion en el vector puede ser una macro. "sizeof(t_info)" tambien
+    poner_ord_lista(&dic[pos].pl, info, sizeof(t_info), cmp_clave_info, ReemplazarInfo); //El calculo para saber la posicion en el vector puede ser una macro. "sizeof(t_info)" tambien
 
     return 0;
 }
 
-int obtener_dic(t_diccionario* dic, char* clave, char* valor){
+int obtener_dic(t_diccionario* dic, char* clave, void* valor, size_t tamValor){
 
     int pos = hash(clave);
 
-    t_info *info = NULL; //Lo inicializo como null para saltearme el warning
-    iniInfo(info, clave, valor);
+    t_info *info = iniInfo(clave, valor, tamValor);; //Lo inicializo como null para saltearme el warning
+
 
     //Funcion que retorna la info del nodo en el parametro que le paso
-    ver_nodo((dic+(sizeof(t_diccionario)*pos))->pl, info, sizeof(t_info), clave, cmp_clave_info);
+    ver_nodo(&dic[pos].pl, info, sizeof(t_info), clave, cmp_clave_info);
 
     //Copio el valor en el parametro recibido para el retorno
-    strcpy(valor, info->valor);
+    memcpy(valor, info->valor, tamValor);
 
-    return 0;
+    free(info);
+
+    return 1;
 }
 
 
@@ -111,19 +142,16 @@ int sacar_dic(t_diccionario* dic, char* clave){
     int pos = hash(clave);
 
     //Funcion que busca en la lista la clave y elimina el nodo
-    sacar_elem_ord_lista((dic+(sizeof(t_diccionario)*pos))->pl, clave, 1, cmp_clave_info); //En lugar de 1 debo pasar el tam de ¿clave?
+    sacar_elem_ord_lista(&dic[pos].pl, clave, 1, cmp_clave_info); //En lugar de 1 debo pasar el tam de ¿clave?
 
     return 0;
 }
 
 int recorrer_dic(t_diccionario* dic, int tam, void (*accion)(void*)){
     //Recorro cada elemento
-    int pos = 0;
-    while((dic+(sizeof(t_diccionario) * pos)) < dic +((sizeof(t_diccionario) * tam))){
 
-        ///Aca va una funcion que recorra la lista y ejecute para cada elemento la accion que recibo como paramtro
-        mapeo((dic+(sizeof(t_diccionario) * pos))->pl, accion);
-        pos++;
+    for(int i = 0; i < tam; i++){
+        mapeo(&dic[i].pl, accion);
     }
 
     return 0;

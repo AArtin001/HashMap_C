@@ -1,0 +1,21 @@
+# depslib dependency file v1.0
+1761833932 source:c:\proyectosdev\hashmap\hashmap_c\diccionario.c
+	"diccionario.h"
+
+1761832178 c:\proyectosdev\hashmap\hashmap_c\diccionario.h
+	"lista.h"
+
+1761830993 c:\proyectosdev\hashmap\hashmap_c\lista.h
+	<stdio.h>
+	<stdlib.h>
+	<string.h>
+
+1761833849 source:c:\proyectosdev\hashmap\hashmap_c\lista.c
+	"lista.h"
+
+1761834126 source:c:\proyectosdev\hashmap\hashmap_c\main.c
+	<stdio.h>
+	"diccionario.h"
+
+1761826140 source:c:\proyectosdev\hashmap\hashmap_c\utils.c
+

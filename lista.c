@@ -92,13 +92,14 @@ int poner_ord_lista(tLista* pl, const void* pd, size_t tam, int (*cmp)(const voi
 {
     tNodo* nue;
     int comp;
-    while(  *pl && (comp=cmp(pd, (*pl)->info)>0) )
+    while(*pl && (comp=cmp((*pl)->info, pd) < 0) )
         pl=&(*pl)->sig;
-    if( *pl && comp==0)
+    if( *pl && comp==0){
         //Aplico la accion
-
         accion(pl, pd); //Accion que recibe el puntero al nodo a modificar y, opcionalmente, algo mas (en este caso la nueva info)
         return ACTUALIZADO;   // duplicado
+    }
+
     nue=(tNodo*)malloc(sizeof(tNodo)+tam);
     if(!nue)
         return FALSO;   // sin memoria
