@@ -22,8 +22,6 @@ unsigned hash(char *s);
 
 void mapeo(tLista*, void (*funcion)(void*));
 
-void destruir_tinfo(t_info*);
-
 int crear_dic(t_diccionario*, int); //Recibe un puntero a diccionario y el tamaño
 
 int poner_dic(t_diccionario*, char*, void*, size_t); //Recibo un puntero al diccionario, un puntero a la clave(que luego va a ser hasheada) y un puntero a la info
@@ -33,8 +31,6 @@ int obtener_dic(t_diccionario*, char*, void*, size_t); //Recibo un *p a dicciona
 int sacar_dic(t_diccionario*, char*); //Recibo un *p a diccionario y la clave
 
 int recorrer_dic(t_diccionario*, int, void (*accion)(void*)); //Recibo un *p a diccionario, la accion y una func comparacion(puede ser null y ejecutar para todos)
-
-void destruir_lista(tLista*);
 
 int destruir_dic(t_diccionario*, int); //Recibo un *p a diccionario
 

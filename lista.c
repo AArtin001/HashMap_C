@@ -166,3 +166,33 @@ int ver_nodo(tLista* pl, void* pd, size_t tam, char* clave, int (*cmp)(const voi
 
     return FALSO;
 }
+
+void destruir_lista(tLista* pl, void (*funcion)(void*))
+{
+    tNodo* elim;
+    //Si no hay lista retorno
+    if(!*pl)
+        return;
+    //Recorro lista, destruyendo info y el nodo
+    while(*pl)
+    {
+        if((*pl)->info){
+            funcion((*pl)->info);
+            //free((*pl)->info); // Esto genera errores, se elimina junto con elim por la forma en la que se solicita la memoria
+
+        }
+
+        elim=*pl;
+        *pl=elim->sig;
+        free(elim);
+    }
+}
+
+void mapeo(tLista* pl, void (*funcion)(void*))
+{
+    while(*pl)
+    {
+        funcion((*pl)->info);
+        pl=&(*pl)->sig;
+    }
+}

@@ -48,23 +48,14 @@ int ReemplazarInfo(const tLista* pl, void* nInfo) {
     return 1;
 }
 
-///Esta funcion es de lista
-void mapeo(tLista* pl, void (*funcion)(void*))
+void destruir_tinfo(void* pi)
 {
-    while(*pl)
-    {
-        funcion((*pl)->info);
-        pl=&(*pl)->sig;
-    }
-}
+    t_info* pinfo = (t_info*)pi;
 
-void destruir_tinfo(t_info* pinfo)
-{
     if(!pinfo)
         return;
     free(pinfo->clave);
     free(pinfo->valor);
-    //free(pinfo);
 }
 
 /**FIN Funcion Accion**/
@@ -174,23 +165,6 @@ int recorrer_dic(t_diccionario* dic, int tam, void (*accion)(void*)){
     }
 }
 
-///Esta funcion es de lista
-void destruir_lista(tLista* pl)
-{
-    tNodo* elim;
-    //Si no hay lista retorno
-    if(!*pl)
-        return;
-    //Recorro lista, destruyendo info y el nodo
-    while(*pl)
-    {
-        elim = *pl; ///Apunto al primer nodo que se elimina
-        t_info* inf = (t_info*) elim->info; ///Casteo el dato de info para recibir la informacion en la estructura
-        destruir_tinfo(inf);
-        *pl = elim->sig;
-        free(elim);
-    }
-}
 
 int destruir_dic(t_diccionario* dic, int tam){
     //Recorro cada elemento e inicializo la lista para cada uno
@@ -201,7 +175,7 @@ int destruir_dic(t_diccionario* dic, int tam){
         pos++;
     }*/
     for(int i = 0; i < tam; i++){
-        destruir_lista(&dic[i].pl);
+        destruir_lista(&dic[i].pl, destruir_tinfo);
     }
 
     return 0;
