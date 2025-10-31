@@ -31,6 +31,10 @@
 		<Compiler>
 			<Add option="-Wall" />
 		</Compiler>
+		<Unit filename="Utils.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="Utils.h" />
 		<Unit filename="diccionario.c">
 			<Option compilerVar="CC" />
 		</Unit>

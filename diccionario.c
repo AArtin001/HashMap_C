@@ -8,12 +8,12 @@ unsigned hash(char *s){
     for (hashval = 0; *s != '\0'; s++)
         hashval = (*s + 31 * hashval);
     return hashval % HASHSIZE;
- }
+}
 
  ///Recibe como parametros una t_info y un string
 int cmp_clave_info(const void* nodoInfo, const void* claveBuscada) {
     const t_info* info = (const t_info*)nodoInfo;
-    char*   k    = (char*)claveBuscada;
+    const char*   k    = (const char*)claveBuscada;
     return strcmp(info->clave, k);
 }
 
@@ -115,9 +115,14 @@ int poner_dic(t_diccionario *dic, char *clave, void* valor, size_t tamValor){
 
     //Guardo la info en una estructura
     t_info *info = iniInfo(clave, valor, tamValor); //Lo inicializo como null para saltearme el warning
+    if(!info){
+        return 0;
+    }
 
     //Inserto la estructura con los datos en la lista
     poner_ord_lista(&dic[pos].pl, info, sizeof(t_info), cmp_clave_info_2, ReemplazarInfo); ///El calculo para saber la posicion en el vector puede ser una macro. "sizeof(t_info)" tambien
+
+    free(info); // Se libera la info para que no quede asignada memoria basura
 
     return 0;
 }
@@ -128,12 +133,14 @@ int obtener_dic(t_diccionario* dic, char* clave, void* valor, size_t tamValor){
 
     t_info *info = iniInfo(clave, valor, tamValor);; //Lo inicializo como null para saltearme el warning
 
-
     //Funcion que retorna la info del nodo en el parametro que le paso
-    ver_nodo(&dic[pos].pl, info, sizeof(t_info), clave, cmp_clave_info);
+    if(!ver_nodo(&dic[pos].pl, info, sizeof(t_info), clave, cmp_clave_info)){
+        return 0;
+    }
 
     //Copio el valor en el parametro recibido para el retorno
-    memcpy(valor, info->valor, tamValor);
+    memcpy(valor, info->valor, MINIMO(tamValor, info->tamvalor));
+
     free(info);
     return 1;
 }
@@ -153,11 +160,18 @@ int sacar_dic(t_diccionario* dic, char* clave){
 int recorrer_dic(t_diccionario* dic, int tam, void (*accion)(void*)){
     //Recorro cada elemento
 
-    for(int i = 0; i < tam; i++){
+    int i;
+
+    for(i = 0; i < tam; i++){
         mapeo(&dic[i].pl, accion);
     }
 
-    return 0;
+    if(!i){
+        return 0;
+    }
+    else{
+        return 1;
+    }
 }
 
 ///Esta funcion es de lista
@@ -170,11 +184,10 @@ void destruir_lista(tLista* pl)
     //Recorro lista, destruyendo info y el nodo
     while(*pl)
     {
-        destruir_tinfo((*pl)->info);
-        free((*pl)->info);
-
-        elim=*pl;
-        *pl=elim->sig;
+        elim = *pl; ///Apunto al primer nodo que se elimina
+        t_info* inf = (t_info*) elim->info; ///Casteo el dato de info para recibir la informacion en la estructura
+        destruir_tinfo(inf);
+        *pl = elim->sig;
         free(elim);
     }
 }
