@@ -10,8 +10,7 @@
 #define ACTUALIZADO 2
 #define MINIMO(x,y) ((x)<=(y)?(x):(y))
 
-typedef struct sNodo
-{
+typedef struct sNodo{
     void* info;
     size_t tam;
     struct sNodo* sig;

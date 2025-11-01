@@ -120,8 +120,8 @@ long apariciones_de(t_diccionario* dic, const char* palabra){
 
 void menu(){
     char nombre[100];
-    t_diccionario dic[HASHSIZE];
-    crear_dic(dic, HASHSIZE);
+    t_diccionario* dic;
+    dic = crear_dic(HASHSIZE);
     printf(" =========================================================\n");
     printf(" =                   PROCESADOR DE TEXTOS                =\n");
     printf(" =========================================================\n\n");

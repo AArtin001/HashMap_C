@@ -15,8 +15,6 @@ typedef struct {
     long signos;
 } t_stats;
 
-
-
 void menu();
 
 #endif // UTILS_H

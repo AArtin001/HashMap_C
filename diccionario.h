@@ -1,7 +1,7 @@
 #ifndef DICCIONARIO_H_INCLUDED
 #define DICCIONARIO_H_INCLUDED
 #include "lista.h"
-#define HASHSIZE 5
+#define HASHSIZE 1
 
 //Aca pasabamos tLista* pl, pero en realidad es un puntero a tNodo*
 typedef struct{
@@ -22,7 +22,7 @@ unsigned hash(char *s);
 
 void mapeo(tLista*, void (*funcion)(void*));
 
-int crear_dic(t_diccionario*, int); //Recibe un puntero a diccionario y el tamaño
+t_diccionario* crear_dic(int); //Recibe un puntero a diccionario y el tamaño
 
 int poner_dic(t_diccionario*, char*, void*, size_t); //Recibo un puntero al diccionario, un puntero a la clave(que luego va a ser hasheada) y un puntero a la info
 
