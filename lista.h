@@ -19,17 +19,28 @@ typedef struct sNodo{
 typedef tNodo* tLista;
 
 int cmp(const void* a, const void* b);
+
 void crear_lista(tLista* pl);
+
 int lista_vacia(tLista* pl);
+
 int lista_llena(tLista* pl, size_t tam);
 int poner_pri_lista(tLista* pl, const void* pd, size_t tam);
+
 int poner_ult_lista(tLista* pl, const void* pd, size_t tam);
+
 int sacar_pri_lista(tLista* pl, void* pd, size_t tam);
+
 int sacar_ult_lista(tLista* pl, void* pd, size_t tam);
+
 int poner_ord_lista(tLista* pl, const void* pd, size_t tam, int (*cmp)(const void*, const void*), int (*accion)(const tLista*, void*));
+
 int sacar_elem_ord_lista(tLista* pl, void* clave, void* valor, size_t tam, int (*cmp)(const void*, const void*));
+
 int ver_nodo(tLista* pl, void* pd, size_t tam, char* clave, int (*cmp)(const void*, const void*));
+
 void destruir_lista(tLista*, void (*funcion)(void*));
+
 void mapeo(tLista*, void (*funcion)(void*));
 
 #endif // LISTA_H_INCLUDED

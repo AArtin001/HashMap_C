@@ -1,0 +1,1 @@
+Este es un archivo con una extencion .bat.

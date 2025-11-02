@@ -113,47 +113,46 @@ int poner_dic(t_diccionario *dic, char *clave, void* valor, size_t tamValor){
     t_diccionario* ins = dic + pos;
 
     //Guardo la info en una estructura
-    t_info *info = iniInfo(clave, valor, tamValor); //Lo inicializo como null para saltearme el warning
+    t_info *info = iniInfo(clave, valor, tamValor);
     if(!info){
         return 0;
     }
 
     //Inserto la estructura con los datos en la lista
-    poner_ord_lista(&ins->pl, info, sizeof(t_info), cmp_clave_info_2, ReemplazarInfo); ///El calculo para saber la posicion en el vector puede ser una macro. "sizeof(t_info)" tambien
+    poner_ord_lista(&ins->pl, info, sizeof(t_info), cmp_clave_info_2, ReemplazarInfo);
 
-    free(info); // Se libera la info para que no quede asignada memoria basura
-    return 0;
+    free(info);
+    return 1;
 }
 
 int obtener_dic(t_diccionario* dic, char* clave, void* valor, size_t tamValor){
 
     int pos = hash(clave);
     t_diccionario* ins = dic + pos;
-    t_info *info = iniInfo(clave, valor, tamValor);; //Lo inicializo como null para saltearme el warning
+    t_info info;
 
     //Funcion que retorna la info del nodo en el parametro que le paso
-    if(!ver_nodo(&ins->pl, info, sizeof(t_info), clave, cmp_clave_info)){
+    if(!ver_nodo(&ins->pl, &info, sizeof(t_info), clave, cmp_clave_info)){
         return 0;
     }
 
     //Copio el valor en el parametro recibido para el retorno
-    memcpy(valor, info->valor, MINIMO(tamValor, info->tamvalor));
-    free(info);
+    memcpy(valor, info.valor, MINIMO(tamValor, info.tamvalor));
 
     return 1;
 }
 
 
-int sacar_dic(t_diccionario* dic, char* clave){
+int sacar_dic(t_diccionario* dic, char* clave, void* valor, size_t tamValor){
     int pos = hash(clave);
     t_diccionario* del = dic + pos;
-
+    t_info info;
 
     //Funcion que busca en la lista la clave y elimina el nodo
-    sacar_elem_ord_lista(&del->pl, clave, NULL, 0, cmp_clave_info); /**Paso como paramtros un NUll y un 0
-                                                                            NULL = Lugar donde se guarda la info que se esta eliminando
-                                                                            0 = Tam de NULL(Si es >0 da error de acceso a memoria )**/
-    return 0;
+    sacar_elem_ord_lista(&del->pl, clave, &info, sizeof(t_info), cmp_clave_info);
+    memcpy(valor, info.valor, MINIMO(tamValor, info.tamvalor));
+
+    return 1;
 }
 
 int recorrer_dic(t_diccionario* dic, int tam, void (*accion)(void*)){
@@ -171,13 +170,6 @@ int recorrer_dic(t_diccionario* dic, int tam, void (*accion)(void*)){
 
 
 int destruir_dic(t_diccionario* dic, int tam){
-    //Recorro cada elemento e inicializo la lista para cada uno
-    /*int pos = 0;
-    while((dic+(sizeof(t_diccionario) * pos)) < dic +((sizeof(t_diccionario) * tam))){
-        ///Elimino la lista -> implica eliminar datos y liberar memoria
-        destruir_lista((&dic[pos])->pl);
-        pos++;
-    }*/
     t_diccionario* ini = dic;
     t_diccionario* fin = dic + tam;
 
@@ -187,5 +179,5 @@ int destruir_dic(t_diccionario* dic, int tam){
     }
 
     free(dic);
-    return 0;
+    return 1;
 }

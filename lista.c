@@ -114,36 +114,15 @@ int poner_ord_lista(tLista* pl, const void* pd, size_t tam, int (*cmp)(const voi
     return VERDADERO;
 }
 
-///Esta funcion esta re mal
-/*
-int sacar_elem_ord_lista(tLista* pl, void* pd, size_t tam, int (*cmp)(const void*, const void*))
-{
-    tNodo* elim;
-    int comp;
-    if(!*pl)
-        return FALSO;   // lista vacia
-    while(*pl && (comp=cmp((*pl)->info,pd)>0))
-        pl=&(*pl)->sig;
-    if(!*pl || comp)
-        return FALSO;   // No encontro el elemento
-
-    elim=*pl;
-    memcpy(pd,elim->info,MINIMO(tam,elim->tam));
-
-    *pl=elim->sig;
-    free(elim);
-    return VERDADERO;
-} */
-
 int sacar_elem_ord_lista(tLista* pl, void* clave, void* info , size_t tam, int (*cmp)(const void*, const void*))
 {
     tNodo* elim;
     int comp;
     if(!*pl)
         return FALSO;   // lista vacia
-    while(*pl && (comp=cmp((*pl)->info,clave)>0))
+    while(*pl && (comp=cmp((*pl)->info,clave)>0))//Mientras haya elementos en la lista y cmp sea mayor a 0
         pl=&(*pl)->sig;
-    if(!*pl || comp)
+    if(!*pl || comp) //Si llegue al final de la lista o comp es != 0
         return FALSO;   // No encontro el elemento
 
     elim=*pl;
@@ -178,8 +157,6 @@ void destruir_lista(tLista* pl, void (*funcion)(void*))
     {
         if((*pl)->info){
             funcion((*pl)->info);
-            //free((*pl)->info); // Esto genera errores, se elimina junto con elim por la forma en la que se solicita la memoria
-
         }
 
         elim=*pl;
